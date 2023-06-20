@@ -1,0 +1,8 @@
+jwt:
+  secrect: YOUR_SECRET
+  header-prefix: Bearer
+spring:
+  redis:
+    host: YOUR_HOST
+    port: YOUR_PORT
+    password: YOUR_PASSWORD
