@@ -1,6 +1,5 @@
 package com.boojux.ftchatchannel.server;
 import com.boojux.ftchatchannel.dispatcher.WebSocketFrameDispatcher;
-import com.boojux.ftchatchannel.handler.JwtAuthHandler;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
 import com.boojux.ftchatchannel.handler.YourCustomHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -12,6 +11,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import jakarta.annotation.Resource;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ import java.util.List;
 @Component
 public class NettyServer {
     private static final int PORT = 8080;
+
+    @Resource
+    private ApplicationContext applicationContext;
 
     public void start() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -38,7 +42,8 @@ public class NettyServer {
                                     .addLast(new HttpServerCodec())
                                     .addLast(new HttpObjectAggregator(65536))
                                     .addLast(new WebSocketServerProtocolHandler("/websocket"))
-                                    .addLast(new YourCustomHandler())
+//                                    .addLast(new YourCustomHandler())
+                                    .addLast(applicationContext.getBean(YourCustomHandler.class))
                                     .addLast(new WebSocketFrameDispatcher(handlers))
                             ;
                         }

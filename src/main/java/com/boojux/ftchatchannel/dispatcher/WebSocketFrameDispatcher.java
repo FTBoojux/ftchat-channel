@@ -18,8 +18,8 @@ public class WebSocketFrameDispatcher extends SimpleChannelInboundHandler<WebSoc
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, WebSocketFrame webSocketFrame) throws Exception {
         for(WebSocketFrameHandler handler : handlers) {
-            if (handler.canHandle(webSocketFrame)) {
-                handler.handle(webSocketFrame);
+            if (handler.canHandle(channelHandlerContext, webSocketFrame)) {
+                handler.handle(channelHandlerContext, webSocketFrame);
                 return;
             }
         }
