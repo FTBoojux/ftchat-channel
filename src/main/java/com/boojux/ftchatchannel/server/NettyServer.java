@@ -2,6 +2,7 @@ package com.boojux.ftchatchannel.server;
 import com.boojux.ftchatchannel.dispatcher.WebSocketFrameDispatcher;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
 import com.boojux.ftchatchannel.handler.YourCustomHandler;
+import com.boojux.ftchatchannel.handler.impl.ContactAddHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
@@ -37,6 +38,7 @@ public class NettyServer {
                         public void initChannel(SocketChannel channel) {
                             List<WebSocketFrameHandler> handlers = new ArrayList<>();
                             // Here you can add more handlers to the pipeline
+                            handlers.add(applicationContext.getBean(ContactAddHandler.class));
                             channel.pipeline()
 //                                    .addLast(new JwtAuthHandler())
                                     .addLast(new HttpServerCodec())
