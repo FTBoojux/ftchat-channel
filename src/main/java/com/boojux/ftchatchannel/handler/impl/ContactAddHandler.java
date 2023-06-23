@@ -10,7 +10,10 @@ import com.google.gson.reflect.TypeToken;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.util.ReferenceCountUtil;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
@@ -23,6 +26,7 @@ public class ContactAddHandler implements WebSocketFrameHandler {
     private Gson gson;
     @Resource
     private WebSocketConnectionManager webSocketConnectionManager;
+    private static final Logger logger = LoggerFactory.getLogger(ContactAddHandler.class);
     @Override
     public boolean canHandle(ChannelHandlerContext channelHandlerContext, WebSocketFrame frame) {
         String jsonString = ((TextWebSocketFrame) frame).text();
@@ -39,7 +43,9 @@ public class ContactAddHandler implements WebSocketFrameHandler {
         String userId = contactAddDTO.getData().getTargetId();
         ChannelHandlerContext connection = webSocketConnectionManager.getConnection(userId);
         if (!Objects.isNull(connection)) {
-            connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(contactAddDTO)));
+            connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(contactAddDTO.getData())));
         }
+        ReferenceCountUtil.release(frame);
+        logger.info("引用已释放");
     }
 }
