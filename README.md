@@ -4,9 +4,9 @@
 
 本项目目前共分为三个模块：
 
-- ftchat-channel(当前模块)：聊天通道模块，用于实现实时聊天通道的建立和维护
-- [ftchat](https://github.com/FTBoojux/ftchat): 聊天客户端模块，用于提供聊天客户端的功能，基于Next.js和Tauri搭建
-- [ftchat-backend](https://github.com/FTBoojux/ftchat_backend): 聊天服务端模块，用于提供聊天服务端的功能，基于Django搭建(用于学习Django框架和Python语言)
+- FTChat-channel(当前模块)：聊天通道模块，用于实现实时聊天通道的建立和维护
+- [FTChat](https://github.com/FTBoojux/ftchat): 聊天客户端模块，用于提供聊天客户端的功能，基于Next.js和Tauri搭建
+- [FTChat-backend](https://github.com/FTBoojux/ftchat_backend): 聊天服务端模块，用于提供聊天服务端的功能，基于Django搭建(用于学习Django框架和Python语言)
 
 ## 项目开发记录
 
