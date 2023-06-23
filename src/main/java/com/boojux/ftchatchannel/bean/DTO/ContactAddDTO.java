@@ -1,4 +1,4 @@
-package com.boojux.ftchatchannel.bean;
+package com.boojux.ftchatchannel.bean.DTO;
 
 public class ContactAddDTO {
     private String targetId;

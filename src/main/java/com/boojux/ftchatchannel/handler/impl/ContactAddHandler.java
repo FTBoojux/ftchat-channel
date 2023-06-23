@@ -1,16 +1,20 @@
 package com.boojux.ftchatchannel.handler.impl;
 
 import com.boojux.ftchatchannel.bean.BaseWebSocketFrame;
-import com.boojux.ftchatchannel.bean.ContactAddDTO;
+import com.boojux.ftchatchannel.bean.DTO.ContactAddDTO;
+import com.boojux.ftchatchannel.bean.domain.FriendRequest;
 import com.boojux.ftchatchannel.conf.WebSocketConnectionManager;
+import com.boojux.ftchatchannel.enums.MessageStatusTypeEnum;
 import com.boojux.ftchatchannel.enums.WebSocketFrameTypeEnum;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
+import com.boojux.ftchatchannel.repository.FriendRequestRepository;
+import com.boojux.ftchatchannel.utils.CtxHelper;
+import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.util.ReferenceCountUtil;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class ContactAddHandler implements WebSocketFrameHandler {
@@ -26,6 +31,10 @@ public class ContactAddHandler implements WebSocketFrameHandler {
     private Gson gson;
     @Resource
     private WebSocketConnectionManager webSocketConnectionManager;
+    @Resource
+    private FriendRequestRepository friendRequestRepository;
+    @Resource
+    private CtxHelper ctxHelper;
     private static final Logger logger = LoggerFactory.getLogger(ContactAddHandler.class);
     @Override
     public boolean canHandle(ChannelHandlerContext channelHandlerContext, WebSocketFrame frame) {
@@ -39,13 +48,18 @@ public class ContactAddHandler implements WebSocketFrameHandler {
         String jsonString = ((TextWebSocketFrame) frame).text();
         Type type = new TypeToken<BaseWebSocketFrame<ContactAddDTO>>() {}.getType();
         BaseWebSocketFrame<ContactAddDTO> contactAddDTO = gson.fromJson(jsonString, type);
-        String token = contactAddDTO.getToken();
-        String userId = contactAddDTO.getData().getTargetId();
-        ChannelHandlerContext connection = webSocketConnectionManager.getConnection(userId);
+        String targetId = contactAddDTO.getData().getTargetId();
+        FriendRequest friendRequest = new FriendRequest();
+        String userId = ctxHelper.getUserId(channelHandlerContext);
+        friendRequest.setRequestee(UUID.fromString(targetId));
+        friendRequest.setRequester(UUID.fromString(userId));
+        friendRequest.setMessage(contactAddDTO.getData().getMessage());
+        friendRequest.setTimestamp(Uuids.timeBased());
+        friendRequest.setStatus(MessageStatusTypeEnum.UNREAD.getStatus());
+        friendRequestRepository.save(friendRequest);
+        ChannelHandlerContext connection = webSocketConnectionManager.getConnection(targetId);
         if (!Objects.isNull(connection)) {
             connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(contactAddDTO.getData())));
         }
-        ReferenceCountUtil.release(frame);
-        logger.info("引用已释放");
     }
 }
