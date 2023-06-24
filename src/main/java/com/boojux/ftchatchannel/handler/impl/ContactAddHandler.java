@@ -1,15 +1,17 @@
 package com.boojux.ftchatchannel.handler.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.boojux.ftchatchannel.bean.BaseWebSocketFrame;
 import com.boojux.ftchatchannel.bean.DTO.ContactAddDTO;
 import com.boojux.ftchatchannel.bean.domain.FriendRequest;
 import com.boojux.ftchatchannel.conf.WebSocketConnectionManager;
 import com.boojux.ftchatchannel.enums.MessageStatusTypeEnum;
+import com.boojux.ftchatchannel.enums.StringEnums;
 import com.boojux.ftchatchannel.enums.WebSocketFrameTypeEnum;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
+import com.boojux.ftchatchannel.message.producer.MessageProducer;
 import com.boojux.ftchatchannel.repository.FriendRequestRepository;
 import com.boojux.ftchatchannel.utils.CtxHelper;
-import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,10 +33,11 @@ public class ContactAddHandler implements WebSocketFrameHandler {
     private Gson gson;
     @Resource
     private WebSocketConnectionManager webSocketConnectionManager;
-    @Resource
-    private FriendRequestRepository friendRequestRepository;
+
     @Resource
     private CtxHelper ctxHelper;
+    @Resource
+    private MessageProducer messageProducer;
     private static final Logger logger = LoggerFactory.getLogger(ContactAddHandler.class);
     @Override
     public boolean canHandle(ChannelHandlerContext channelHandlerContext, WebSocketFrame frame) {
@@ -51,12 +54,14 @@ public class ContactAddHandler implements WebSocketFrameHandler {
         String targetId = contactAddDTO.getData().getTargetId();
         FriendRequest friendRequest = new FriendRequest();
         String userId = ctxHelper.getUserId(channelHandlerContext);
-        friendRequest.setRequestee(UUID.fromString(targetId));
-        friendRequest.setRequester(UUID.fromString(userId));
+        friendRequest.setRequestee(targetId);
+        friendRequest.setRequester(userId);
         friendRequest.setMessage(contactAddDTO.getData().getMessage());
-        friendRequest.setTimestamp(Uuids.timeBased());
+        friendRequest.setTimestamp(DateUtil.now());
         friendRequest.setStatus(MessageStatusTypeEnum.UNREAD.getStatus());
-        friendRequestRepository.save(friendRequest);
+        messageProducer.sendMessage(StringEnums.RABBIT_MQ_EXCHANGE.getValue(),
+                StringEnums.RABBIT_MQ_ROUTING_KEY.getValue(),
+                gson.toJson(friendRequest));
         ChannelHandlerContext connection = webSocketConnectionManager.getConnection(targetId);
         if (!Objects.isNull(connection)) {
             connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(contactAddDTO.getData())));
