@@ -3,9 +3,12 @@ package com.boojux.ftchatchannel.handler.impl;
 import cn.hutool.core.date.DateUtil;
 import com.boojux.ftchatchannel.bean.BaseWebSocketFrame;
 import com.boojux.ftchatchannel.bean.DTO.ContactAddDTO;
+import com.boojux.ftchatchannel.bean.VO.BasicMessage;
+import com.boojux.ftchatchannel.bean.VO.ContactAddVO;
 import com.boojux.ftchatchannel.bean.domain.FriendRequest;
 import com.boojux.ftchatchannel.conf.WebSocketConnectionManager;
 import com.boojux.ftchatchannel.enums.MessageStatusTypeEnum;
+import com.boojux.ftchatchannel.enums.MessageTypeEnum;
 import com.boojux.ftchatchannel.enums.StringEnums;
 import com.boojux.ftchatchannel.enums.WebSocketFrameTypeEnum;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
@@ -59,12 +62,15 @@ public class ContactAddHandler implements WebSocketFrameHandler {
         friendRequest.setMessage(contactAddDTO.getData().getMessage());
         friendRequest.setTimestamp(DateUtil.now());
         friendRequest.setStatus(MessageStatusTypeEnum.UNREAD.getStatus());
-        messageProducer.sendMessage(StringEnums.RABBIT_MQ_EXCHANGE.getValue(),
-                StringEnums.RABBIT_MQ_ROUTING_KEY.getValue(),
-                gson.toJson(friendRequest));
+//        messageProducer.sendMessage(StringEnums.RABBIT_MQ_EXCHANGE.getValue(),
+//                StringEnums.RABBIT_MQ_ROUTING_KEY.getValue(),
+//                gson.toJson(friendRequest));
         ChannelHandlerContext connection = webSocketConnectionManager.getConnection(targetId);
         if (!Objects.isNull(connection)) {
-            connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(contactAddDTO.getData())));
+            BasicMessage message = new BasicMessage();
+            message.setTimestamp(DateUtil.now());
+            message.setType(MessageTypeEnum.FRIEND_REQUEST.getType());
+            connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(message)));
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.boojux.ftchatchannel.handler;
 import com.boojux.ftchatchannel.bean.BaseWebSocketFrame;
+import com.boojux.ftchatchannel.bean.VO.BasicMessage;
 import com.boojux.ftchatchannel.conf.WebSocketConnectionManager;
 import com.boojux.ftchatchannel.enums.WebSocketFrameTypeEnum;
 import com.boojux.ftchatchannel.utils.CtxHelper;
@@ -48,7 +49,9 @@ public class YourCustomHandler extends SimpleChannelInboundHandler<WebSocketFram
                 String userId = jwtUtils.getValueFromJwt(webSocketFrame1.getToken(), "user_id");
                 if (null != userId && redisUtils.checkToken(webSocketFrame1.getToken())) {
                     System.out.println("token验证成功");
-                    channelHandlerContext.writeAndFlush(new TextWebSocketFrame("token验证成功"));
+                    BasicMessage basicMessage = new BasicMessage();
+                    basicMessage.setContent("token验证成功");
+                    channelHandlerContext.writeAndFlush(new TextWebSocketFrame(gson.toJson(basicMessage)));
                     ctxHelper.setUserId(channelHandlerContext, userId);
                     webSocketConnectionManager.addConnection(userId, channelHandlerContext);
                     logger.info("用户{}连接成功", userId);
