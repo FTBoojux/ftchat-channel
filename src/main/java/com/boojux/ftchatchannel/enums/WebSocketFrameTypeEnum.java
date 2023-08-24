@@ -5,6 +5,7 @@ public enum WebSocketFrameTypeEnum {
     CONTACT_ADD(1, "添加联系人"),
 
     GROUP_JOIN_REQUEST(2, "加入群聊请求"),
+    CONVERSATION_MESSAGE(3, "会话消息"),
     ;
 
     public Integer getType() {
