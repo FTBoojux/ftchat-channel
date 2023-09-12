@@ -1,4 +1,4 @@
-package com.boojux.ftchatchannel.conf;
+package com.boojux.ftchatchannel.utils;
 
 import com.boojux.ftchatchannel.bean.DTO.backend.TokenResp;
 import jakarta.annotation.PostConstruct;
@@ -11,19 +11,20 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.logging.Logger;
 
 @Component
-public class FtchatClientConf {
+public class FtchatClient {
     @Resource
     private WebClient.Builder webClientBuilder;
     @Value("${ftchat-backend.token-retry}")
     private Integer tokenRetry;
 
+    private String token;
+
     private static String TOKEN_URL = "http://localhost:8000/account/login_inner/";
 
-    private static final Logger logger = Logger.getLogger(FtchatClientConf.class.getName());
+    private static final Logger logger = Logger.getLogger(FtchatClient.class.getName());
     @PostConstruct
     public void init(){
-        String token = getToken();
-        return ;
+        this.token = getToken();
     }
 
     private String getToken(){
