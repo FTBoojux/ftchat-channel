@@ -14,6 +14,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -21,15 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class NettyServer {
+@Slf4j
+public class NettyServer implements DisposableBean {
     private static final int PORT = 8080;
 
     @Resource
     private ApplicationContext applicationContext;
 
+    EventLoopGroup bossGroup;
+    EventLoopGroup workerGroup;
     public void start() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
@@ -58,5 +63,16 @@ public class NettyServer {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    @Override
+    public void destroy() {
+        if(bossGroup != null){
+            bossGroup.shutdownGracefully();
+        }
+        if (workerGroup != null){
+            workerGroup.shutdownGracefully();
+        }
+        log.info("NettyServer destroy");
     }
 }

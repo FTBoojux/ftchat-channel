@@ -31,3 +31,7 @@
 ### 2023-09-12
 
 增加从ftchat-backend获取身份token
+
+### 2023-11-22
+
+为netty server增加了destory生命周期，关闭时一起关闭netty进场
