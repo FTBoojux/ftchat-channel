@@ -3,6 +3,7 @@ import com.boojux.ftchatchannel.dispatcher.WebSocketFrameDispatcher;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
 import com.boojux.ftchatchannel.handler.YourCustomHandler;
 import com.boojux.ftchatchannel.handler.impl.ContactAddHandler;
+import com.boojux.ftchatchannel.handler.impl.ConversationMessageHandler;
 import com.boojux.ftchatchannel.handler.impl.GroupJoinHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -46,6 +47,7 @@ public class NettyServer implements DisposableBean {
                             // Here you can add more handlers to the pipeline
                             handlers.add(applicationContext.getBean(ContactAddHandler.class));
                             handlers.add(applicationContext.getBean(GroupJoinHandler.class));
+                            handlers.add(applicationContext.getBean(ConversationMessageHandler.class));
                             channel.pipeline()
 //                                    .addLast(new JwtAuthHandler())
                                     .addLast(new HttpServerCodec())

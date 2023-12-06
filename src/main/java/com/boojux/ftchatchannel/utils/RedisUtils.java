@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 @Component
 public class RedisUtils {
@@ -23,7 +24,8 @@ public class RedisUtils {
 //            result = Objects.requireNonNull(valueOperations.getOperations().boundListOps(key).range(0, -1)).contains(token);
 //        }
         if (!Objects.isNull(userId)) {
-            if (Objects.requireNonNull(redisTemplate.opsForList().range(key, 0, -1)).contains(token)) {
+            List<String> tokens = redisTemplate.opsForList().range(key, 0, -1);
+            if (Objects.requireNonNull(tokens).contains(token)) {
                 result = true;
             }
         }
