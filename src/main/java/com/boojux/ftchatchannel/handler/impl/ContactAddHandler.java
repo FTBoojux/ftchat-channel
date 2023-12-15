@@ -24,8 +24,10 @@ import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -65,12 +67,17 @@ public class ContactAddHandler implements WebSocketFrameHandler {
 //        messageProducer.sendMessage(StringEnums.RABBIT_MQ_EXCHANGE.getValue(),
 //                StringEnums.RABBIT_MQ_ROUTING_KEY.getValue(),
 //                gson.toJson(friendRequest));
-        ChannelHandlerContext connection = webSocketConnectionManager.getConnection(targetId);
-        if (!Objects.isNull(connection)) {
-            BasicMessage message = new BasicMessage();
-            message.setTimestamp(DateUtil.now());
-            message.setType(MessageTypeEnum.FRIEND_REQUEST.getType());
-            connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(message)));
-        }
+//        ChannelHandlerContext connection = webSocketConnectionManager.getConnection(targetId);
+        List<ChannelHandlerContext> connections = webSocketConnectionManager.getConnection(targetId);
+        BasicMessage message = new BasicMessage();
+        message.setTimestamp(DateUtil.now());
+        message.setType(MessageTypeEnum.FRIEND_REQUEST.getType());
+//        if (!CollectionUtils.isEmpty(connections)) {
+////            connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(message)));
+//            connections.forEach(connection -> {
+//                connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(message)));
+//            });
+//        }
+        ctxHelper.sendMsg(connections, message);
     }
 }

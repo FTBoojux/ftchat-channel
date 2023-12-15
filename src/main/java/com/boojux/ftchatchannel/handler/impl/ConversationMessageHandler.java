@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
 @Component
 public class ConversationMessageHandler implements WebSocketFrameHandler {
@@ -61,10 +62,12 @@ public class ConversationMessageHandler implements WebSocketFrameHandler {
         participantRepository.findAllByConversation(Integer.parseInt(conversationId)).stream()
                 .filter(participant -> !participant.getUser().equals(userId))
                 .forEach(participant -> {
-                    ChannelHandlerContext connection = webSocketConnectionManager.getConnection(participant.getUser());
-                    if(connection != null){
-                        connection.writeAndFlush(new TextWebSocketFrame(gson.toJson( jsonString)));
-                    }
+                    List<ChannelHandlerContext> connection = webSocketConnectionManager.getConnection(participant.getUser());
+                    ctxHelper.sendMsg(connection, conversationMessage);
+//                    ChannelHandlerContext connection = webSocketConnectionManager.getConnection(participant.getUser());
+//                    if(connection != null){
+//                        connection.writeAndFlush(new TextWebSocketFrame(gson.toJson( jsonString)));
+//                    }
                 });
     }
 }

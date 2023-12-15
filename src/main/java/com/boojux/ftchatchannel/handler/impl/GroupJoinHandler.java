@@ -7,7 +7,6 @@ import com.boojux.ftchatchannel.bean.VO.BasicMessage;
 import com.boojux.ftchatchannel.conf.WebSocketConnectionManager;
 import com.boojux.ftchatchannel.enums.WebSocketFrameTypeEnum;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
-import com.boojux.ftchatchannel.message.producer.MessageProducer;
 import com.boojux.ftchatchannel.utils.CtxHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -20,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -30,8 +30,6 @@ public class GroupJoinHandler implements WebSocketFrameHandler {
     private WebSocketConnectionManager webSocketConnectionManager;
     @Resource
     private CtxHelper ctxHelper;
-    @Resource
-    private MessageProducer messageProducer;
     private static final Logger logger = LoggerFactory.getLogger(ContactAddHandler.class);
     @Override
     public boolean canHandle(ChannelHandlerContext channelHandlerContext, WebSocketFrame frame) {
@@ -55,8 +53,9 @@ public class GroupJoinHandler implements WebSocketFrameHandler {
             message.setTimestamp(DateUtil.now());
             message.setType(WebSocketFrameTypeEnum.GROUP_JOIN_REQUEST.getType());
             message.setReceiver(groupJoinRequestDTO.getData().getRequester());
-            ChannelHandlerContext connection = webSocketConnectionManager.getConnection(groupJoinRequestDTO.getData().getRequester());
-            connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(message)));
+            List<ChannelHandlerContext> connection = webSocketConnectionManager.getConnection(groupJoinRequestDTO.getData().getRequester());
+//            connection.writeAndFlush(new TextWebSocketFrame(gson.toJson(message)));
+            ctxHelper.sendMsg(connection, message);
         }
     }
 }

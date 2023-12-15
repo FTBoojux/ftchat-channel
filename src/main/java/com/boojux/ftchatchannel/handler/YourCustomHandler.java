@@ -7,15 +7,11 @@ import com.boojux.ftchatchannel.utils.CtxHelper;
 import com.boojux.ftchatchannel.utils.JwtUtils;
 import com.boojux.ftchatchannel.utils.RedisUtils;
 import com.google.gson.Gson;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.util.AttributeKey;
-import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
@@ -46,13 +42,15 @@ public class YourCustomHandler extends SimpleChannelInboundHandler<WebSocketFram
             System.out.println("message:" + message);
             BaseWebSocketFrame webSocketFrame1 = gson.fromJson(message, BaseWebSocketFrame.class);
             if (WebSocketFrameTypeEnum.AUTHORIZATION.getType().equals(webSocketFrame1.getType())) {
+                String userToken = webSocketFrame1.getToken();
                 String userId = jwtUtils.getValueFromJwt(webSocketFrame1.getToken(), "user_id");
-                if (null != userId && redisUtils.checkToken(webSocketFrame1.getToken())) {
+                if (null != userToken && redisUtils.checkToken(userToken)) {
                     System.out.println("token验证成功");
                     BasicMessage basicMessage = new BasicMessage();
                     basicMessage.setContent("token验证成功");
                     channelHandlerContext.writeAndFlush(new TextWebSocketFrame(gson.toJson(basicMessage)));
                     ctxHelper.setUserId(channelHandlerContext, userId);
+                    ctxHelper.setUserToken(channelHandlerContext, userToken);
                     webSocketConnectionManager.addConnection(userId, channelHandlerContext);
                     logger.info("用户{}连接成功", userId);
                 } else {
@@ -75,7 +73,8 @@ public class YourCustomHandler extends SimpleChannelInboundHandler<WebSocketFram
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         String userId = ctxHelper.getUserId(ctx);
-        webSocketConnectionManager.removeConnection(userId);
+//        webSocketConnectionManager.removeConnection(userId);
+        webSocketConnectionManager.removeConnection(ctx);
         logger.info("用户{}断开连接", userId);
         super.channelInactive(ctx);
     }
