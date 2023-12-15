@@ -60,7 +60,7 @@ public class ConversationMessageHandler implements WebSocketFrameHandler {
         }
         // 查询会话中的所有成员，除了当前用户
         participantRepository.findAllByConversation(Integer.parseInt(conversationId)).stream()
-                .filter(participant -> !participant.getUser().equals(userId))
+//                .filter(participant -> !participant.getUser().equals(userId))
                 .forEach(participant -> {
                     List<ChannelHandlerContext> connection = webSocketConnectionManager.getConnection(participant.getUser());
                     ctxHelper.sendMsg(connection, conversationMessage);
