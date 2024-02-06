@@ -1,5 +1,7 @@
 package com.boojux.ftchatchannel.utils;
 
+import com.boojux.ftchatchannel.bean.BaseWebSocketFrame;
+import com.boojux.ftchatchannel.bean.DTO.messageSend.MessageSendDTO;
 import com.boojux.ftchatchannel.bean.VO.BasicMessage;
 import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;

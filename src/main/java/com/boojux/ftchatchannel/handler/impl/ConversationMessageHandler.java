@@ -58,11 +58,16 @@ public class ConversationMessageHandler implements WebSocketFrameHandler {
             logger.error("conversationId is null");
             return;
         }
-        // 查询会话中的所有成员，除了当前用户
-        participantRepository.findAllByConversation(Integer.parseInt(conversationId)).stream()
+        // 查询会话中的所有成员
+        participantRepository.findAllByConversation(Integer.parseInt(conversationId))
 //                .filter(participant -> !participant.getUser().equals(userId))
                 .forEach(participant -> {
                     List<ChannelHandlerContext> connection = webSocketConnectionManager.getConnection(participant.getUser());
+                    if(participant.getUser().equals(userId)){
+                        conversationMessage.getData().setSide("right");
+                    }else{
+                        conversationMessage.getData().setSide("left");
+                    }
                     ctxHelper.sendMsg(connection, conversationMessage);
 //                    ChannelHandlerContext connection = webSocketConnectionManager.getConnection(participant.getUser());
 //                    if(connection != null){
