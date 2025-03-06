@@ -1,19 +1,20 @@
 package com.boojux.ftchatchannel.utils;
 
 import jakarta.annotation.Resource;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
 @Component
 public class RedisUtils {
-    @Resource(name = "redisTemplate")
-    private ValueOperations<String, String> valueOperations;
     @Resource(name = "stringRedisTemplate")
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
     @Resource
     private JwtUtils jwtUtils;
     public boolean checkToken(String token) {
@@ -24,11 +25,25 @@ public class RedisUtils {
 //            result = Objects.requireNonNull(valueOperations.getOperations().boundListOps(key).range(0, -1)).contains(token);
 //        }
         if (!Objects.isNull(userId)) {
-            List<String> tokens = redisTemplate.opsForList().range(key, 0, -1);
+            List<String> tokens = stringRedisTemplate.opsForList().range(key, 0, -1);
             if (Objects.requireNonNull(tokens).contains(token)) {
                 result = true;
             }
         }
         return result;
+    }
+
+    public Set<String> scanKeys(String pattern) {
+        Set<String> keys = new HashSet<>();
+        ScanOptions scanOptions = ScanOptions.scanOptions()
+                .match(pattern)
+                .count(1000)
+                .build();
+        try(Cursor<String> cursor= redisTemplate.scan(scanOptions)) {
+            while (cursor.hasNext()) {
+                keys.add(cursor.next());
+            }
+        }
+        return keys;
     }
 }
