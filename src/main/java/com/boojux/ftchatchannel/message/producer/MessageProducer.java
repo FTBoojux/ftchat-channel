@@ -26,6 +26,6 @@ public class MessageProducer {
     }
 
     public void sendMessage(String exchange, String routingKey, Object message) {
-        rabbitTemplate.convertAndSend(exchange, routingKey, message);
+        rabbitTemplate.convertAndSend(exchange, routingKey, message.toString());
     }
 }
