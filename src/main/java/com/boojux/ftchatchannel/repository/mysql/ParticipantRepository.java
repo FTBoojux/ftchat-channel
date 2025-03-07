@@ -1,6 +1,6 @@
-package com.boojux.ftchatchannel.repository;
+package com.boojux.ftchatchannel.repository.mysql;
 
-import com.boojux.ftchatchannel.bean.domain.Participant;
+import com.boojux.ftchatchannel.bean.domain.mysql.Participant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

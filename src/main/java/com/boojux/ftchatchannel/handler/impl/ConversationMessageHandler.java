@@ -1,13 +1,12 @@
 package com.boojux.ftchatchannel.handler.impl;
 
 import com.boojux.ftchatchannel.bean.BaseWebSocketFrame;
-import com.boojux.ftchatchannel.bean.DTO.ConversationMessageDTO;
 import com.boojux.ftchatchannel.bean.DTO.messageSend.MessageSendDTO;
 import com.boojux.ftchatchannel.conf.WebSocketConnectionManager;
 import com.boojux.ftchatchannel.enums.WebSocketFrameTypeEnum;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
 import com.boojux.ftchatchannel.message.producer.MessageProducer;
-import com.boojux.ftchatchannel.repository.ParticipantRepository;
+import com.boojux.ftchatchannel.repository.mysql.ParticipantRepository;
 import com.boojux.ftchatchannel.utils.CtxHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

@@ -1,4 +1,4 @@
-package com.boojux.ftchatchannel.bean.domain;
+package com.boojux.ftchatchannel.bean.domain.mysql;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

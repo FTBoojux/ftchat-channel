@@ -4,16 +4,13 @@ import cn.hutool.core.date.DateUtil;
 import com.boojux.ftchatchannel.bean.BaseWebSocketFrame;
 import com.boojux.ftchatchannel.bean.DTO.ContactAddDTO;
 import com.boojux.ftchatchannel.bean.VO.BasicMessage;
-import com.boojux.ftchatchannel.bean.VO.ContactAddVO;
-import com.boojux.ftchatchannel.bean.domain.FriendRequest;
+import com.boojux.ftchatchannel.bean.domain.mysql.FriendRequest;
 import com.boojux.ftchatchannel.conf.WebSocketConnectionManager;
 import com.boojux.ftchatchannel.enums.MessageStatusTypeEnum;
 import com.boojux.ftchatchannel.enums.MessageTypeEnum;
-import com.boojux.ftchatchannel.enums.StringEnums;
 import com.boojux.ftchatchannel.enums.WebSocketFrameTypeEnum;
 import com.boojux.ftchatchannel.handler.WebSocketFrameHandler;
 import com.boojux.ftchatchannel.message.producer.MessageProducer;
-import com.boojux.ftchatchannel.repository.FriendRequestRepository;
 import com.boojux.ftchatchannel.utils.CtxHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,12 +21,9 @@ import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Component
 public class ContactAddHandler implements WebSocketFrameHandler {
