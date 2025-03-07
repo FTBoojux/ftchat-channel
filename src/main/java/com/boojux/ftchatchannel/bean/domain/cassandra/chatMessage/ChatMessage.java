@@ -1,12 +1,10 @@
-package com.boojux.ftchatchannel.bean.domain.cassandra;
+package com.boojux.ftchatchannel.bean.domain.cassandra.chatMessage;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
-
-import java.util.Date;
 
 /**
  * create table chat_message
@@ -28,15 +26,11 @@ import java.util.Date;
 @Setter
 @ToString
 public class ChatMessage {
-    @PrimaryKeyColumn(name = "conversation_id", ordinal = 0)
-    private String conversation_id;
-    @PrimaryKeyColumn(name = "message_id", ordinal = 2)
-    private String message_id;
+    @PrimaryKey
+    private ChatMessagePrimaryKey key;
     private String content;
     private String sender_id;
     private String sentiment_analysis_result;
-    @PrimaryKeyColumn(name = "timestamp", ordinal = 1)
-    private Date timestamp;
     private Boolean is_group_chat;
     private Integer message_type;
 }
