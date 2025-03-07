@@ -1,5 +1,7 @@
 package com.boojux.ftchatchannel.utils;
 
+import com.boojux.ftchatchannel.bean.BaseWebSocketFrame;
+import com.boojux.ftchatchannel.bean.DTO.messageSend.MessageSendDTO;
 import com.boojux.ftchatchannel.bean.VO.BasicMessage;
 import com.boojux.ftchatchannel.enums.StringEnums;
 import com.boojux.ftchatchannel.message.producer.MessageProducer;
